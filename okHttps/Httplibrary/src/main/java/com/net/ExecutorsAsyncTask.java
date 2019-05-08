@@ -6,6 +6,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
@@ -17,6 +18,7 @@ import com.net.httplibrary.R;
 import com.net.imp.ResponseTask;
 import com.net.util.JsonUtil;
 import com.net.util.StatConfig;
+import com.net.util.ThreadFactory;
 
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -26,20 +28,20 @@ import java.util.concurrent.Executors;
  * Created by Administrator on 2017/4/10 0010.
  */
 
-public class HttpTask extends AsyncTask < Map<String, String>, String,String>{
+public class ExecutorsAsyncTask extends AsyncTask < Map<String, String>, String,String>{
 
 
     private ResponseTask imp;
     private Activity context;
 
- //   public AlertDialog dialog_sell = null;
+    //   public AlertDialog dialog_sell = null;
     private Dialog progressDialog;
 
     private  boolean isNetworkAvailable=true,isOpenDialg=false;
     //判断当前活动是否开启
     private boolean isActivityOpen=true;
 
-    public HttpTask(Activity context){
+    public ExecutorsAsyncTask(Activity context){
         this.context=context;
 
         //判断网络是否可用
@@ -47,7 +49,7 @@ public class HttpTask extends AsyncTask < Map<String, String>, String,String>{
 
     }
 
-    public HttpTask(Activity context,boolean isOpenDialg){
+    public ExecutorsAsyncTask(Activity context,boolean isOpenDialg){
         this.context=context;
 
         //判断网络是否可用
@@ -62,7 +64,7 @@ public class HttpTask extends AsyncTask < Map<String, String>, String,String>{
      * @param isOpenDialg 是否开启提示
      * @param isActivityOpen 判断当前活动是否开启
      */
-    public HttpTask(Activity context,boolean isOpenDialg,boolean isActivityOpen){
+    public ExecutorsAsyncTask(Activity context,boolean isOpenDialg,boolean isActivityOpen){
         this.context=context;
         //判断网络是否可用
         this.isNetworkAvailable=isNetworkAvailable(context);
@@ -74,7 +76,9 @@ public class HttpTask extends AsyncTask < Map<String, String>, String,String>{
         this.imp=imp;
 
         if(isActivityOpen) {
-            this.executeOnExecutor( AsyncTask.THREAD_POOL_EXECUTOR ,map);
+            //ThreadFactory.getThreadServer()
+           this.executeOnExecutor(ThreadFactory.getThreadServer(),map);
+
         }
 
     }
@@ -88,7 +92,7 @@ public class HttpTask extends AsyncTask < Map<String, String>, String,String>{
         }else{
             if(isOpenDialg) {
                 //结束提示
-             //dialogwait(context, false);
+                //dialogwait(context, false);
             }
             imp.onError(context,StatConfig.ERROR_CODE_E445);
         }
@@ -100,6 +104,7 @@ public class HttpTask extends AsyncTask < Map<String, String>, String,String>{
             return StatConfig.ERROR_CODE_E404;
         }
         if(isNetworkAvailable) {
+
             return imp.onTaskBackground( params[0] );
         }else{
             return StatConfig.ERROR_CODE_E445;
@@ -117,13 +122,13 @@ public class HttpTask extends AsyncTask < Map<String, String>, String,String>{
             return;
         }
         //获取返回数据状态
-       String code = JsonUtil.getStringData(response, "state");
+        String code = JsonUtil.getStringData(response, "state");
 
-         if ( code.equals("E444") || code.equals("E445") ) {
-              imp.onError(context, response);
-         } else {
-              imp.onTaskPost(response);
-         }
+        if ( code.equals("E444") || code.equals("E445") ) {
+            imp.onError(context, response);
+        } else {
+            imp.onTaskPost(response);
+        }
 
     }
     /**

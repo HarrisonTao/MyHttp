@@ -35,6 +35,8 @@ public abstract  class ResponseTask implements com.imp.TaskImp {
         String code = JsonUtil.getStringData(response, "state");
         if (code.equals("E445")){
             HttpLog.showDLog("当前网络不可用！");
+
+
         }else if(code.equals("E444")){
             HttpLog.showDLog( "当前网络异常!");
         }

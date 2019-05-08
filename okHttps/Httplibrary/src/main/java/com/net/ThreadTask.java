@@ -15,13 +15,14 @@ import android.widget.ImageView;
 import com.net.httplibrary.R;
 import com.net.imp.ResponseTask;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
  * Created by Administrator on 2017/4/10 0010.
  */
 
-public class ThreadTask extends AsyncTask < TreeMap<String, String>, String,String>{
+public class ThreadTask extends AsyncTask < Map<String, String>, String,String>{
 
 
     private ResponseTask imp;
@@ -48,7 +49,7 @@ public class ThreadTask extends AsyncTask < TreeMap<String, String>, String,Stri
         this.isOpenDialg=isOpenDialg;
 
     }
-    public void executeTask( TreeMap<String, String> map,ResponseTask imp){
+    public void executeTask(Map<String, String> map, ResponseTask imp){
         this.imp=imp;
 
         if(isOpenDialg){
@@ -71,7 +72,7 @@ public class ThreadTask extends AsyncTask < TreeMap<String, String>, String,Stri
     }
 
     @Override
-    protected String doInBackground( TreeMap<String, String>... params) {
+    protected String doInBackground( Map<String, String>... params) {
 
             return imp.onTaskBackground( params[0]);
 
